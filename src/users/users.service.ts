@@ -14,7 +14,6 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const { name, email, phone } = createUserDto;
-
     return await this.usersRepository.save({ name: name, email: email, phone: phone, createdAt: new Date() })
   }
   async findAll(): Promise<User[]> {
