@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { Crawl } from 'src/crawls/entities/crawl.entity';
+import { CrawlProgress } from 'src/crawls/entities/crawlProgress.entity';
+import { CrawlRequest } from 'src/crawls/entities/crawlRequest.entity';
 
 export const databaseProviders = [
   {
@@ -9,11 +9,11 @@ export const databaseProviders = [
       const dataSource = new DataSource({
         type: 'mariadb',
         host: process.env.DB_HOST,
-        port: 3306,
+        port: parseInt(process.env.DB_PORT),
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_DATABASE,
-        entities: [User, Crawl],
+        entities: [CrawlRequest, CrawlProgress],
         synchronize: false,
       });
 

@@ -8,13 +8,28 @@ export class CrawlsController {
   constructor(private readonly crawlsService: CrawlsService) { }
 
   @Post()
-  create(@Body() createCrawlDto: CreateCrawlDto) {
-    return this.crawlsService.create(createCrawlDto);
+  async create(@Body() createCrawlDto: CreateCrawlDto) {
+    return await this.crawlsService.insertRequest(createCrawlDto);
   }
 
   @Get()
   findAll() {
     return this.crawlsService.findAll();
+  }
+
+  @Get('progress')
+  async findProgress() {
+    return this.crawlsService.findProgress();
+  }
+
+  @Get('progress/cnt')
+  async findProgressCount() {
+    return this.crawlsService.findProgressCount();
+  }
+
+  @Get('progress/customer/:id')
+  async findProgressCustomer(@Param('id') id: number) {
+    return this.crawlsService.findProgressCustomer(id);
   }
 
   @Get('data/:id')
@@ -24,8 +39,8 @@ export class CrawlsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCrawlDto: UpdateCrawlDto) {
-    return this.crawlsService.update(+id, updateCrawlDto);
+  async update(@Param('id') id: string, @Body() updateCrawlDto: UpdateCrawlDto) {
+    return await this.crawlsService.update(id, updateCrawlDto);
   }
 
   @Delete(':id')

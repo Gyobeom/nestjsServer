@@ -4,6 +4,7 @@ import { CrawlsController } from './crawls.controller';
 import { CrawlsProvider } from './crawl.repository';
 import { DatabaseModule } from 'database/database.module';
 
+
 @Module({
   imports: [DatabaseModule],
   controllers: [CrawlsController],
