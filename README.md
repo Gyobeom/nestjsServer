@@ -26,6 +26,14 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## .env 파일 생성
+DB_HOST= ADDRESS ex('localhost')
+DB_USER= USER ex('root')
+DB_PASS= PASSWORD ex('root')
+DB_PORT= PORT ex('3306')
+DB_DATABASE= DATABASENAME ex('test')
+
+
 ## Installation
 
 ```bash
