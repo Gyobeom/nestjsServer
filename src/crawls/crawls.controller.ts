@@ -16,26 +16,27 @@ export class CrawlsController {
 
   @ApiResponse({ status: 201, description: 'The record has been successfully returned' })
   @Get('allrequests')
-  findAll() {
-    return this.crawlsService.findRequest();
+  async findAll() {
+    return await this.crawlsService.findRequest();
   }
 
   @ApiResponse({ status: 201, description: 'The record has been successfully returned' })
   @Get('allprogress')
   async findProgress() {
-    return this.crawlsService.findProgress();
+    return await this.crawlsService.findProgress();
   }
 
   @ApiResponse({ status: 201, description: 'Return progress count' })
   @Get('progresscnt/customer/:id')
   async findProgressCustomerCount(@Param('id') id: number) {
-    return this.crawlsService.findProgressCustomerCount(id);
+    return await this.crawlsService.findProgressCustomerCount(id)
+
   }
 
   @ApiResponse({ status: 201, description: 'Return progress' })
   @Get('progress/customer/:id')
   async findProgressCustomer(@Param('id') id: number) {
-    return this.crawlsService.findProgressCustomer(id);
+    return await this.crawlsService.findProgressCustomer(id);
   }
 
   @ApiResponse({ status: 201, description: 'The record has been successfully updated' })

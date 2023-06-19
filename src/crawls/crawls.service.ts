@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateCrawlDto } from './dto/create-crawl.dto';
 import { UpdateCrawlDto } from './dto/update-crawl.dto';
 import { CrawlProgress } from './entities/crawlProgress.entity';
@@ -33,7 +33,11 @@ export class CrawlsService {
   }
 
   async update(id: string, updateCrawlDto: UpdateCrawlDto) {
-    return await this.crawlRepository.update(id, updateCrawlDto);
+    const temp_data = await this.crawlRepository.update(id, updateCrawlDto);
+    if (temp_data.affected === 0) {
+      throw new BadRequestException('Not Found Request Data', { cause: new Error(), description: 'Not Found Request Data' })
+    }
+    return temp_data
   }
 
   async remove(id: string) {
