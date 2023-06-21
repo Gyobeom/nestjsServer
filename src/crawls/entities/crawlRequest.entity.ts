@@ -1,5 +1,12 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { CrawlProgress } from "./crawlProgress.entity";
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { CrawlCustomer } from "./crawlCustomer.entity";
 
 @Index("fk_crawl_request_channel_seq", ["channelSeq"], {})
 @Index("fk_crawl_request_status", ["status"], {})
@@ -99,4 +106,13 @@ export class CrawlRequest {
 
   @Column("varchar", { name: "mode", nullable: true, length: 20 })
   mode: string | null;
+
+  @ManyToOne(() => CrawlCustomer, (CrawlCustomer) => CrawlCustomer.requests, {
+    onDelete: "RESTRICT",
+    onUpdate: "RESTRICT",
+  })
+  @JoinColumn([
+    { name: "customer_seq", referencedColumnName: "seq" }
+  ])
+  crawlCustomer: CrawlCustomer
 }

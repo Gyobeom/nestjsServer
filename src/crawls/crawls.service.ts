@@ -4,6 +4,7 @@ import { UpdateCrawlDto } from './dto/update-crawl.dto';
 import { CrawlProgress } from './entities/crawlProgress.entity';
 import { CrawlRequest } from './entities/crawlRequest.entity';
 import { CrawlsRepository } from './crawls.repository';
+import { CreateCustomerDto } from './dto/create-crawl-customer.dto';
 
 @Injectable()
 export class CrawlsService {
@@ -42,5 +43,11 @@ export class CrawlsService {
 
   async remove(id: string) {
     return await this.crawlRepository.remove(id);
+  }
+  async insertCustomer(createCustomer: CreateCustomerDto) {
+    return await this.crawlRepository.insertCustomer(createCustomer);
+  }
+  async findCustomertotal() {
+    return await this.crawlRepository.findCustomerTotal();
   }
 }

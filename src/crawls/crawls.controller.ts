@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { CrawlsService } from './crawls.service';
 import { CreateCrawlDto } from './dto/create-crawl.dto';
 import { UpdateCrawlDto } from './dto/update-crawl.dto';
+import { CreateCustomerDto } from './dto/create-crawl-customer.dto';
 import { ApiTags, ApiResponse } from '@nestjs/swagger/dist/decorators';
 
 @ApiTags('crawl')
@@ -50,4 +51,16 @@ export class CrawlsController {
   async remove(@Param('id') id: string) {
     return await this.crawlsService.remove(id);
   }
+  @ApiResponse({ status: 200, description: 'Insert Customer' })
+  @Post('insert/customer')
+  async createCustomer(@Body() createCustomerDto: CreateCustomerDto) {
+    return await this.crawlsService.insertCustomer(createCustomerDto)
+  }
+
+  @ApiResponse({ status: 200, description: 'Find Customer' })
+  @Get('customer/findall')
+  async findCustomertotal() {
+    return await this.crawlsService.findCustomertotal()
+  }
+
 }

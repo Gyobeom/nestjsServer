@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import { CrawlProgress } from 'src/crawls/entities/crawlProgress.entity';
 import { CrawlRequest } from 'src/crawls/entities/crawlRequest.entity';
+import { CrawlCustomer } from 'src/crawls/entities/crawlCustomer.entity';
+
 
 export const databaseProviders = [
   {
@@ -13,7 +15,7 @@ export const databaseProviders = [
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_DATABASE,
-        entities: [CrawlRequest, CrawlProgress],
+        entities: [CrawlRequest, CrawlProgress, CrawlCustomer],
         synchronize: false,
       });
 

@@ -3,6 +3,8 @@ import { CrawlRequest } from "./entities/crawlRequest.entity";
 import { CrawlProgress } from "./entities/crawlProgress.entity";
 import { CreateCrawlDto } from "./dto/create-crawl.dto";
 import { UpdateCrawlDto } from "./dto/update-crawl.dto";
+import { CrawlCustomer } from "./entities/crawlCustomer.entity";
+import { CreateCustomerDto } from "./dto/create-crawl-customer.dto";
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,7 +13,9 @@ export class CrawlsRepository {
     @Inject('CRAWL_REPOSITORY')
     private readonly crawlRepo: Repository<CrawlRequest>,
     @Inject('CRAWL_PROGRESS_REPOSITORY')
-    private readonly crawlProg: Repository<CrawlProgress>
+    private readonly crawlProg: Repository<CrawlProgress>,
+    @Inject('CRAWL_CUSTOMER_REPOSITORY')
+    private readonly crawlCus: Repository<CrawlCustomer>
   ) { }
 
   async insertRequest(createCrawlDto: CreateCrawlDto) {
@@ -46,7 +50,8 @@ export class CrawlsRepository {
 
   async findRequest() {
     try {
-      return await this.crawlRepo.find();
+      return await this.crawlRepo.find()
+
     } catch (e) {
       console.log('Find Request ERROR')
       throw e
@@ -116,6 +121,32 @@ export class CrawlsRepository {
       console.log("Not Deleted");
       throw (e);
     }
+  }
 
+  async insertCustomer(createCustomer: CreateCustomerDto) {
+    try {
+      return await this.crawlCus.createQueryBuilder()
+        .insert()
+        .into(CrawlCustomer)
+        .values([
+          {
+            name: createCustomer.name,
+            comment: createCustomer.comment,
+          }
+        ])
+        .execute();
+    } catch (e) {
+      console.log('Insert ERROR');
+      throw e;
+    }
+  }
+
+  async findCustomerTotal() {
+    try {
+      return await this.crawlCus.find()
+    } catch (e) {
+      console.log('Insert ERROR');
+      throw e;
+    }
   }
 }
