@@ -1,21 +1,24 @@
 import { Injectable, Inject } from "@nestjs/common";
-import { CrawlRequest } from "./entities/crawlRequest.entity";
-import { CrawlProgress } from "./entities/crawlProgress.entity";
-import { CreateCrawlDto } from "./dto/create-crawl.dto";
-import { UpdateCrawlDto } from "./dto/update-crawl.dto";
-import { CrawlCustomer } from "./entities/crawlCustomer.entity";
-import { CreateCustomerDto } from "./dto/create-crawl-customer.dto";
+import { CrawlRequest } from "../entities/crawlRequest.entity";
+import { CrawlProgress } from "../entities/crawlProgress.entity";
+import { CreateCrawlDto } from "../dto/create-crawl.dto";
+import { UpdateCrawlDto } from "../dto/update-crawl.dto";
+import { CrawlCustomer } from "../entities/crawlCustomer.entity";
+import { CreateCustomerDto } from "../dto/create-crawl-customer.dto";
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class CrawlsRepository {
   constructor(
     @Inject('CRAWL_REPOSITORY')
-    private readonly crawlRepo: Repository<CrawlRequest>,
+    private crawlRepo: Repository<CrawlRequest>,
+
     @Inject('CRAWL_PROGRESS_REPOSITORY')
-    private readonly crawlProg: Repository<CrawlProgress>,
+    private crawlProg: Repository<CrawlProgress>,
+
     @Inject('CRAWL_CUSTOMER_REPOSITORY')
-    private readonly crawlCus: Repository<CrawlCustomer>
+    private crawlCus: Repository<CrawlCustomer>
   ) { }
 
   async insertRequest(createCrawlDto: CreateCrawlDto) {
@@ -72,6 +75,19 @@ export class CrawlsRepository {
       return await this.crawlProg.createQueryBuilder('progress')
         .innerJoin(CrawlRequest, 'request', 'progress.request_seq = request.seq')
         .where('request.customer_seq IN (:id)', { id: id })
+        .getCount();
+    } catch (e) {
+      console.log()
+      throw e
+    }
+  }
+
+  async findProgressErrorCount(id: number) {
+    try {
+      return await this.crawlProg.createQueryBuilder('progress')
+        .innerJoin(CrawlRequest, 'request', 'progress.request_seq = request.seq')
+        .where('request.customer_seq IN (:id)', { id: id })
+        .andWhere('progress.error_msg is not null')
         .getCount();
     } catch (e) {
       console.log()
@@ -149,4 +165,6 @@ export class CrawlsRepository {
       throw e;
     }
   }
+
+
 }

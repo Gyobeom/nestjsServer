@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
-import { CrawlsService } from './crawls.service';
-import { CreateCrawlDto } from './dto/create-crawl.dto';
-import { UpdateCrawlDto } from './dto/update-crawl.dto';
-import { CreateCustomerDto } from './dto/create-crawl-customer.dto';
+import { CrawlsService } from '../service/crawls.service';
+import { CreateCrawlDto } from '../dto/create-crawl.dto';
+import { UpdateCrawlDto } from '../dto/update-crawl.dto';
+import { CreateCustomerDto } from '../dto/create-crawl-customer.dto';
 import { ApiTags, ApiResponse } from '@nestjs/swagger/dist/decorators';
 
 @ApiTags('crawl')
@@ -63,4 +63,27 @@ export class CrawlsController {
     return await this.crawlsService.findCustomertotal()
   }
 
+  @ApiResponse({ status: 200, description: 'Find ServiceBusQueue Count' })
+  @Get('servicebus/cnt/:id')
+  async getServiceBusQueueCount(@Param('id') id: string) {
+    return await this.crawlsService.getServiceBusQueueCount(id);
+  }
+
+  @ApiResponse({ status: 200, description: 'Find Blob Count' })
+  @Get('blob/cnt/:id')
+  async getBlobCount(@Param('id') id: string) {
+    return await this.crawlsService.getBlobCount(id);
+  }
+
+  @ApiResponse({ status: 200, description: 'Find Request Queue Count' })
+  @Get('queue/cnt/:id')
+  async getQueueCount(@Param('id') id: string) {
+    return await this.crawlsService.getQueueCount(id);
+  }
+
+  @ApiResponse({ status: 200, description: 'Find Progress Error Count' })
+  @Get('progress/errorCnt/:id')
+  async findProgressCustomerErrorCount(@Param('id') id: number) {
+    return await this.crawlsService.findProgressErrorCustomer(id);
+  }
 }

@@ -1,6 +1,6 @@
-import { CrawlProgress } from './entities/crawlProgress.entity'
-import { CrawlRequest } from './entities/crawlRequest.entity'
-import { CrawlCustomer } from './entities/crawlCustomer.entity'
+import { CrawlProgress } from '../entities/crawlProgress.entity'
+import { CrawlRequest } from '../entities/crawlRequest.entity'
+import { CrawlCustomer } from '../entities/crawlCustomer.entity'
 import { DataSource } from 'typeorm'
 
 export const CrawlsProvider = [

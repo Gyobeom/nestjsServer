@@ -2,9 +2,10 @@ import {
   Column,
   Entity,
   Index,
+  IsNull,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from "typeorm";
 import { CrawlCustomer } from "./crawlCustomer.entity";
 

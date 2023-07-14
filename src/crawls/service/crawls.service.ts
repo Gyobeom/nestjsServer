@@ -1,15 +1,18 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { CreateCrawlDto } from './dto/create-crawl.dto';
-import { UpdateCrawlDto } from './dto/update-crawl.dto';
-import { CrawlProgress } from './entities/crawlProgress.entity';
-import { CrawlRequest } from './entities/crawlRequest.entity';
-import { CrawlsRepository } from './crawls.repository';
-import { CreateCustomerDto } from './dto/create-crawl-customer.dto';
+import { CreateCrawlDto } from '../dto/create-crawl.dto';
+import { UpdateCrawlDto } from '../dto/update-crawl.dto';
+import { CrawlProgress } from '../entities/crawlProgress.entity';
+import { CrawlRequest } from '../entities/crawlRequest.entity';
+import { CrawlsRepository } from '../repository/crawls.repository';
+import { CreateCustomerDto } from '../dto/create-crawl-customer.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CrawlCustomer } from '../entities/crawlCustomer.entity';
+import { getServiceBusQueueCount, getBlobCount, getQueueCount } from '../azure/azure_count'
 
 @Injectable()
 export class CrawlsService {
   constructor(
-    private readonly crawlRepository: CrawlsRepository
+    private crawlRepository: CrawlsRepository
   ) { }
 
   async insertRequest(createCrawlDto: CreateCrawlDto) {
@@ -50,4 +53,22 @@ export class CrawlsService {
   async findCustomertotal() {
     return await this.crawlRepository.findCustomerTotal();
   }
+
+  async getServiceBusQueueCount(queueName: string) {
+    return await getServiceBusQueueCount(queueName)
+  }
+
+  async getBlobCount(queueName: string) {
+    return await getBlobCount(`${queueName}/`)
+  }
+
+  async getQueueCount(queueName: string) {
+    return await getQueueCount(`${queueName}/`)
+  }
+
+  async findProgressErrorCustomer(id: number) {
+    return await this.crawlRepository.findProgressErrorCount(id);
+  }
+
+
 }
