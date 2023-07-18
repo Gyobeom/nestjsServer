@@ -1,5 +1,5 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { CrawlRequest } from "./crawlRequest.entity";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
 @Index(
   "tb_crawl_progress_unique",
   ["progressDt", "requestSeq", "startDt", "endDt"],
@@ -13,7 +13,7 @@ import { CrawlRequest } from "./crawlRequest.entity";
   {}
 )
 @Entity("tb_crawl_progress", { schema: "dmap_collector" })
-export class CrawlProgress {
+export class TbCrawlProgress {
   @PrimaryGeneratedColumn({ type: "int", name: "seq", comment: "수집현황 seq" })
   seq: number;
 
@@ -66,5 +66,4 @@ export class CrawlProgress {
 
   @Column("timestamp", { name: "upd_dt", nullable: true, comment: "수정일" })
   updDt: Date | null;
-
 }

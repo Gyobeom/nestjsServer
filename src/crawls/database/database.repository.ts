@@ -1,8 +1,15 @@
 import { DataSource } from 'typeorm';
-import { CrawlProgress } from 'src/crawls/entities/crawlProgress.entity';
-import { CrawlRequest } from 'src/crawls/entities/crawlRequest.entity';
-import { CrawlCustomer } from 'src/crawls/entities/crawlCustomer.entity';
-
+import { TbCrawlProgress } from '../entities/TbCrawlProgress'
+import { TbCrawlRequest } from '../entities/TbCrawlRequest'
+import { TbCustomer } from '../entities/TbCustomer'
+import { TbCrawlChannel } from '../entities/TbCrawlChannel'
+import { TbCrawlRule } from '../entities/TbCrawlRule'
+import { TbCrawlLogin } from '../entities/TbCrawlLogin';
+import { TbCrawlInject } from '../entities/TbCrawlInject';
+import { TbGroupCode } from '../entities/TbGroupCode';
+import { TbCrawlChannelEngine } from '../entities/TbCrawlChannelEngine';
+import { TbCrawlChannelInject } from '../entities/TbCrawlChannelInject';
+import { TbCommonCode } from '../entities/TbCommonCode';
 
 export const databaseProviders = [
   {
@@ -15,7 +22,7 @@ export const databaseProviders = [
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_DATABASE,
-        entities: [CrawlRequest, CrawlProgress, CrawlCustomer],
+        entities: [TbCrawlRequest, TbCrawlProgress, TbCustomer, TbCrawlRule, TbCrawlChannel, TbCrawlLogin, TbCrawlInject, TbGroupCode, TbCrawlChannelEngine, TbCrawlChannelInject, TbCommonCode],
         synchronize: false,
       });
 

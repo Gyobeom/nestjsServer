@@ -1,13 +1,15 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { CreateCrawlDto } from '../dto/create-crawl.dto';
-import { UpdateCrawlDto } from '../dto/update-crawl.dto';
-import { CrawlProgress } from '../entities/crawlProgress.entity';
-import { CrawlRequest } from '../entities/crawlRequest.entity';
+import { CreateRequestCrawlDto } from '../dto/create-crawl-request.dto';
+import { UpdateCrawlDto } from '../dto/update-crawl-request.dto';
+import { TbCrawlProgress } from '../entities/TbCrawlProgress'
+import { TbCrawlRequest } from '../entities/TbCrawlRequest';
 import { CrawlsRepository } from '../repository/crawls.repository';
 import { CreateCustomerDto } from '../dto/create-crawl-customer.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CrawlCustomer } from '../entities/crawlCustomer.entity';
+import { CreateEngineDto } from '../dto/create-crawl-channel-engine.dto';
+import { TbCustomer } from '../entities/TbCustomer';
+import { TbCrawlRule } from '../entities/TbCrawlRule';
 import { getServiceBusQueueCount, getBlobCount, getQueueCount } from '../azure/azure_count'
+import { CreateCrawlRuleDto } from '../dto/create-crawl-rule.dto';
 
 @Injectable()
 export class CrawlsService {
@@ -15,15 +17,15 @@ export class CrawlsService {
     private crawlRepository: CrawlsRepository
   ) { }
 
-  async insertRequest(createCrawlDto: CreateCrawlDto) {
+  async insertRequest(createCrawlDto: CreateRequestCrawlDto) {
     return await this.crawlRepository.insertRequest(createCrawlDto);
   }
 
-  async findRequest(): Promise<CrawlRequest[]> {
+  async findRequest(): Promise<TbCrawlRequest[]> {
     return await this.crawlRepository.findRequest();
   }
 
-  async findProgress(): Promise<CrawlProgress[]> {
+  async findProgress(): Promise<TbCrawlProgress[]> {
     return await this.crawlRepository.findProgress();
 
   }
@@ -68,6 +70,20 @@ export class CrawlsService {
 
   async findProgressErrorCustomer(id: number) {
     return await this.crawlRepository.findProgressErrorCount(id);
+  }
+
+  async findTotalRule() {
+    return await this.crawlRepository.findTotalRule();
+  }
+
+  async insertRule(createRule: CreateCrawlRuleDto) {
+    const rule_seq = await this.crawlRepository.insertRule(createRule);
+    if (rule_seq.identifiers[0].seq > 0)
+      return rule_seq.identifiers[0].seq
+  }
+
+  async insertEngine(createEngine: CreateEngineDto) {
+    return await this.crawlRepository.insertEngine(createEngine);
   }
 
 

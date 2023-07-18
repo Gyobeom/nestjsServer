@@ -1,9 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { CrawlRequest } from "./crawlRequest.entity";
-import { type } from "os";
+import { TbCrawlRequest } from "./TbCrawlRequest";
 
 @Entity("tb_customer", { schema: "dmap_collector" })
-export class CrawlCustomer {
+export class TbCustomer {
   @PrimaryGeneratedColumn({ type: "int", name: "seq", comment: "고객 seq" })
   seq: number;
 
@@ -38,7 +37,8 @@ export class CrawlCustomer {
   updDt: Date | null;
 
   @OneToMany(
-    () => CrawlRequest, (CrawlRequest) => CrawlRequest.crawlCustomer
+    () => TbCrawlRequest,
+    (tbCrawlRequest) => tbCrawlRequest.customerSeq2
   )
-  requests: CrawlRequest[]
+  tbCrawlRequests: TbCrawlRequest[];
 }

@@ -2,19 +2,18 @@ import {
   Column,
   Entity,
   Index,
-  IsNull,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import { CrawlCustomer } from "./crawlCustomer.entity";
+import { TbCustomer } from "./TbCustomer";
 
 @Index("fk_crawl_request_channel_seq", ["channelSeq"], {})
 @Index("fk_crawl_request_status", ["status"], {})
 @Index("fk_crawl_request_type_cd", ["typeCd"], {})
 @Index("fk_crawl_request_customer_seq", ["customerSeq"], {})
 @Entity("tb_crawl_request", { schema: "dmap_collector" })
-export class CrawlRequest {
+export class TbCrawlRequest {
   @PrimaryGeneratedColumn({ type: "int", name: "seq", comment: "수집요청 seq" })
   seq: number;
 
@@ -108,12 +107,10 @@ export class CrawlRequest {
   @Column("varchar", { name: "mode", nullable: true, length: 20 })
   mode: string | null;
 
-  @ManyToOne(() => CrawlCustomer, (CrawlCustomer) => CrawlCustomer.requests, {
+  @ManyToOne(() => TbCustomer, (tbCustomer) => tbCustomer.tbCrawlRequests, {
     onDelete: "RESTRICT",
     onUpdate: "RESTRICT",
   })
-  @JoinColumn([
-    { name: "customer_seq", referencedColumnName: "seq" }
-  ])
-  crawlCustomer: CrawlCustomer
+  @JoinColumn([{ name: "customer_seq", referencedColumnName: "seq" }])
+  customerSeq2: TbCustomer;
 }

@@ -1,27 +1,30 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
 import { CrawlsService } from '../service/crawls.service';
-import { CreateCrawlDto } from '../dto/create-crawl.dto';
-import { UpdateCrawlDto } from '../dto/update-crawl.dto';
+import { CreateRequestCrawlDto } from '../dto/create-crawl-request.dto';
+import { UpdateCrawlDto } from '../dto/update-crawl-request.dto';
 import { CreateCustomerDto } from '../dto/create-crawl-customer.dto';
 import { ApiTags, ApiResponse } from '@nestjs/swagger/dist/decorators';
+import { CreateCrawlRuleDto } from '../dto/create-crawl-rule.dto';
+import { CreateEngineDto } from '../dto/create-crawl-channel-engine.dto';
 
 @ApiTags('crawl')
 @Controller('crawls')
 export class CrawlsController {
   constructor(private readonly crawlsService: CrawlsService) { }
 
+  @ApiResponse({ status: 201, description: 'Input new Request' })
   @Post()
-  async create(@Body() createCrawlDto: CreateCrawlDto) {
+  async create(@Body() createCrawlDto: CreateRequestCrawlDto) {
     return await this.crawlsService.insertRequest(createCrawlDto);
   }
 
-  @ApiResponse({ status: 201, description: 'The record has been successfully returned' })
+  @ApiResponse({ status: 201, description: 'All Request' })
   @Get('allrequests')
   async findAll() {
     return await this.crawlsService.findRequest();
   }
 
-  @ApiResponse({ status: 201, description: 'The record has been successfully returned' })
+  @ApiResponse({ status: 201, description: 'All Progress' })
   @Get('allprogress')
   async findProgress() {
     return await this.crawlsService.findProgress();
@@ -40,13 +43,13 @@ export class CrawlsController {
     return await this.crawlsService.findProgressCustomer(id);
   }
 
-  @ApiResponse({ status: 201, description: 'The record has been successfully updated' })
+  @ApiResponse({ status: 201, description: 'Request Update' })
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateCrawlDto: UpdateCrawlDto) {
     return await this.crawlsService.update(id, updateCrawlDto);
   }
 
-  @ApiResponse({ status: 201, description: 'The record has been successfully deleted' })
+  @ApiResponse({ status: 201, description: 'Progress Delete' })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.crawlsService.remove(id);
@@ -85,5 +88,24 @@ export class CrawlsController {
   @Get('progress/errorCnt/:id')
   async findProgressCustomerErrorCount(@Param('id') id: number) {
     return await this.crawlsService.findProgressErrorCustomer(id);
+  }
+
+
+  @ApiResponse({ status: 200, description: 'get Total Rules' })
+  @Get('rule/request')
+  async findRuldTotal() {
+    return await this.crawlsService.findTotalRule();
+  }
+
+  @ApiResponse({ status: 200, description: 'Insert Rule' })
+  @Get('rule/insert')
+  async insertRule(@Body() createRule: CreateCrawlRuleDto) {
+    return await this.crawlsService.insertRule(createRule);
+  }
+
+  @ApiResponse({ status: 200, description: 'Insert Engine' })
+  @Get('engine/insert')
+  async insertEngine(@Body() createEngine: CreateEngineDto) {
+    return await this.crawlsService.insertRule(createEngine);
   }
 }
