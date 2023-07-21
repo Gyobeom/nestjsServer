@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CrawlsController } from './crawls.controller';
 import { CrawlsService } from '../service/crawls.service';
-import { CreateCrawlDto } from '../dto/create-crawl-request.dto';
-import { UpdateCrawlDto } from '../dto/update-crawl-request.dto';
 import exp from 'constants';
 
 describe('CrawlsController', () => {

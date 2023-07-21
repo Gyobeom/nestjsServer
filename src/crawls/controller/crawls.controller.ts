@@ -109,6 +109,7 @@ export class CrawlsController {
     return await this.crawlsService.insertRule(createEngine);
   }
 
+  @ApiResponse({ status: 200, description: 'Insert Engine' })
   @Get('todayProgressTotal')
   async todayProgressTotal() {
     return await this.crawlsService.todayProgressTotal();
