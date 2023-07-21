@@ -24,6 +24,12 @@ export const databaseProviders = [
         database: process.env.DB_DATABASE,
         entities: [TbCrawlRequest, TbCrawlProgress, TbCustomer, TbCrawlRule, TbCrawlChannel, TbCrawlLogin, TbCrawlInject, TbGroupCode, TbCrawlChannelEngine, TbCrawlChannelInject, TbCommonCode],
         synchronize: false,
+        extra: {
+          poolSize: 20,
+          connectionTimeoutMillis: 2000,
+          query_timeout: 1000,
+          statement_timeout: 1000
+        },
       });
 
       return dataSource.initialize()
