@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Injectable, Inject, BadRequestException } from "@nestjs/common";
 import { TbCrawlProgress } from '../entities/TbCrawlProgress'
 import { TbCrawlRequest } from '../entities/TbCrawlRequest';
 import { CreateRequestCrawlDto } from "../dto/create-crawl-request.dto";
@@ -12,6 +12,9 @@ import { Repository } from 'typeorm';
 import { TbCrawlRule } from '../entities/TbCrawlRule';
 import { TbCrawlChannel } from "../entities/TbCrawlChannel";
 import { TbCrawlChannelEngine } from "../entities/TbCrawlChannelEngine";
+import * as moment from 'moment';
+import { getServiceBusQueueCount, getBlobCount, getQueueCount } from '../azure/azure_count'
+
 
 @Injectable()
 export class CrawlsRepository {
@@ -69,7 +72,6 @@ export class CrawlsRepository {
   async findRequest() {
     try {
       return await this.crawlRepository.find()
-
     } catch (e) {
       console.log('Find Request ERROR')
       throw e
@@ -87,27 +89,45 @@ export class CrawlsRepository {
 
   async findProgressCustomerCount(id: number) {
     try {
-      return await this.crawlProgress.createQueryBuilder('progress')
+      const progressCnt = await this.crawlProgress.createQueryBuilder('progress')
+        .select('progress.request_seq')
         .innerJoin(TbCrawlRequest, 'request', 'progress.request_seq = request.seq')
         .where('request.customer_seq IN (:id)', { id: id })
         .getCount();
+      return progressCnt
     } catch (e) {
       console.log()
       throw e
     }
   }
 
+
   async findProgressErrorCount(id: number) {
     try {
-      return await this.crawlProgress.createQueryBuilder('progress')
-        .innerJoin(TbCrawlRequest, 'request', 'progress.request_seq = request.seq')
-        .where('request.customer_seq IN (:id)', { id: id })
-        .andWhere('progress.error_msg is not null')
+      const customerCnt = await this.crawlCustomer.createQueryBuilder('customer')
+        .where("customer.seq = :id", { id: id })
         .getCount();
-    } catch (e) {
-      console.log()
-      throw e
+      if (customerCnt == 0) {
+        throw new BadRequestException('Check customer Seq number', { cause: new Error(), description: 'Check Customer Seq number' });
+      } else {
+        const progressErrorCnt = await this.crawlProgress.createQueryBuilder('progress')
+          .select('progress.request_seq')
+          .innerJoin(TbCrawlRequest, 'request', 'progress.request_seq = request.seq')
+          .where('request.customer_seq IN (:id)', { id: id })
+          .andWhere('progress.error_msg is not null')
+          .getCount();
+        return progressErrorCnt
+
+        //return progressErrorCnt
+
+
+
+      }
+    } catch (err) {
+      console.log(err);
+      throw err
     }
+
   }
 
   async findProgressCustomer(id: number) {
@@ -228,5 +248,57 @@ export class CrawlsRepository {
     }
   }
 
+  async yearProgressTotal() {
+    try {
+      const today = moment().format("YYYY-MM-DD");
+      const yearMode = await this.crawlRepository.createQueryBuilder('request')
+        .select(['request.customerSeq', 'request.mode'])
+        .where('end_dt >= :startDate', { startDate: today })
+        .andWhere('mode is not null')
+        .andWhere('mode != ""')
+        .groupBy('mode')
+        .getMany();
 
+      //병렬처리
+      const promises = yearMode.map(async i => {
+        let progressCnt = await this.findProgressCustomerCount(i.customerSeq);
+        let progressErrorCnt = await this.findProgressErrorCount(i.customerSeq);
+        // let requestQueue = await this.getQueueCount(i.mode);
+        // let blobCount = await this.getBlobCount(i.mode);
+        // let serviceBuseQueue = await this.getServiceBusQueueCount(i.mode);
+
+        return Promise.allSettled([progressCnt, progressErrorCnt])
+          .then(results => {
+            const [progressCntResult, progressErrorCntResult] = results;
+            const result = {
+              modeName: i.mode,
+              progressCount: progressCntResult.status === 'fulfilled' ? progressCntResult.value : null,
+              progressErrorCount: progressErrorCntResult.status === 'fulfilled' ? progressErrorCntResult.value : null,
+              // requestQueue: requestQueueResult.status === 'fulfilled' ? requestQueueResult.value : null,
+              // blobCount: blobCountResult.status === 'fulfilled' ? blobCountResult.value : null,
+              // serviceBusQueue: serviceBusQueueResult.status === 'fulfilled' ? serviceBusQueueResult.value : null
+            };
+            return result;
+          });
+      });
+      const totalProgress = await Promise.all(promises);
+      return totalProgress;
+    } catch (err) {
+      console.log(err);
+      throw err
+    }
+
+  }
+
+  async getServiceBusQueueCount(queueName: string) {
+    return await getServiceBusQueueCount(queueName)
+  }
+
+  async getBlobCount(queueName: string) {
+    return await getBlobCount(queueName)
+  }
+
+  async getQueueCount(queueName: string) {
+    return await getQueueCount(queueName)
+  }
 }

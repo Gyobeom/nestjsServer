@@ -57,15 +57,16 @@ export class CrawlsService {
   }
 
   async getServiceBusQueueCount(queueName: string) {
-    return await getServiceBusQueueCount(queueName)
+    return await this.crawlRepository.getServiceBusQueueCount(queueName);
   }
 
   async getBlobCount(queueName: string) {
-    return await getBlobCount(`${queueName}/`)
+    return await this.crawlRepository.getBlobCount(`${queueName}/`);
+
   }
 
   async getQueueCount(queueName: string) {
-    return await getQueueCount(`${queueName}/`)
+    return await this.crawlRepository.getQueueCount(queueName);
   }
 
   async findProgressErrorCustomer(id: number) {
@@ -86,5 +87,8 @@ export class CrawlsService {
     return await this.crawlRepository.insertEngine(createEngine);
   }
 
+  async yearProgressTotal() {
+    return await this.crawlRepository.yearProgressTotal();
+  }
 
 }

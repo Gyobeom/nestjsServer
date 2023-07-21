@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { CrawlsService } from '../service/crawls.service';
 import { CreateRequestCrawlDto } from '../dto/create-crawl-request.dto';
 import { UpdateCrawlDto } from '../dto/update-crawl-request.dto';
@@ -13,7 +13,7 @@ export class CrawlsController {
   constructor(private readonly crawlsService: CrawlsService) { }
 
   @ApiResponse({ status: 201, description: 'Input new Request' })
-  @Post()
+  @Post('request')
   async create(@Body() createCrawlDto: CreateRequestCrawlDto) {
     return await this.crawlsService.insertRequest(createCrawlDto);
   }
@@ -108,4 +108,10 @@ export class CrawlsController {
   async insertEngine(@Body() createEngine: CreateEngineDto) {
     return await this.crawlsService.insertRule(createEngine);
   }
+
+  @Get('yearModeProgress')
+  async yearProgressTotal() {
+    return await this.crawlsService.yearProgressTotal();
+  }
+
 }
