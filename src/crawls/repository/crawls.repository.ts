@@ -248,7 +248,7 @@ export class CrawlsRepository {
     }
   }
 
-  async yearProgressTotal() {
+  async todayProgressTotal() {
     try {
       const today = moment().format("YYYY-MM-DD");
       const yearMode = await this.crawlRepository.createQueryBuilder('request')

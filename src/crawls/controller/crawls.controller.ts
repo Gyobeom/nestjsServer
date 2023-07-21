@@ -109,9 +109,9 @@ export class CrawlsController {
     return await this.crawlsService.insertRule(createEngine);
   }
 
-  @Get('yearModeProgress')
-  async yearProgressTotal() {
-    return await this.crawlsService.yearProgressTotal();
+  @Get('todayProgressTotal')
+  async todayProgressTotal() {
+    return await this.crawlsService.todayProgressTotal();
   }
 
 }

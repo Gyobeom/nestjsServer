@@ -87,8 +87,8 @@ export class CrawlsService {
     return await this.crawlRepository.insertEngine(createEngine);
   }
 
-  async yearProgressTotal() {
-    return await this.crawlRepository.yearProgressTotal();
+  async todayProgressTotal() {
+    return await this.crawlRepository.todayProgressTotal();
   }
 
 }
