@@ -258,6 +258,7 @@ export class CrawlsRepository {
         .andWhere('mode != ""')
         .groupBy('mode')
         .getMany();
+
       console.log(yearMode);
       console.log(moment().format());
 
