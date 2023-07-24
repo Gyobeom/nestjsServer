@@ -6,9 +6,6 @@ import { TbCrawlRequest } from '../entities/TbCrawlRequest';
 import { CrawlsRepository } from '../repository/crawls.repository';
 import { CreateCustomerDto } from '../dto/create-crawl-customer.dto';
 import { CreateEngineDto } from '../dto/create-crawl-channel-engine.dto';
-import { TbCustomer } from '../entities/TbCustomer';
-import { TbCrawlRule } from '../entities/TbCrawlRule';
-import { getServiceBusQueueCount, getBlobCount, getQueueCount } from '../azure/azure_count'
 import { CreateCrawlRuleDto } from '../dto/create-crawl-rule.dto';
 
 @Injectable()

@@ -96,7 +96,7 @@ export class CrawlsRepository {
         .getCount();
       return progressCnt
     } catch (e) {
-      console.log()
+      console.log(e);
       throw e
     }
   }
@@ -258,8 +258,8 @@ export class CrawlsRepository {
         .andWhere('mode != ""')
         .groupBy('mode')
         .getMany();
-
-
+      console.log(yearMode);
+      console.log(moment().format());
 
       //병렬처리
       const promises = yearMode.map(async i => {
@@ -280,6 +280,8 @@ export class CrawlsRepository {
               // blobCount: blobCountResult.status === 'fulfilled' ? blobCountResult.value : null,
               // serviceBusQueue: serviceBusQueueResult.status === 'fulfilled' ? serviceBusQueueResult.value : null
             };
+            console.log(result);
+            console.log(moment().format());
             return result;
           });
       });
