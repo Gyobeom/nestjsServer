@@ -259,6 +259,8 @@ export class CrawlsRepository {
         .groupBy('mode')
         .getMany();
 
+
+
       //병렬처리
       const promises = yearMode.map(async i => {
         let progressCnt = await this.findProgressCustomerCount(i.customerSeq);
@@ -283,6 +285,7 @@ export class CrawlsRepository {
       });
       const totalProgress = await Promise.all(promises);
       return totalProgress;
+      //return yearMode;
     } catch (err) {
       console.log(err);
       throw err
