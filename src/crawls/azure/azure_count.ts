@@ -59,6 +59,7 @@ const getBlobCount = async (folderName: string) => {
     const blobs = await containerClient.listBlobsFlat({ prefix: process.env.BLOB_FIRSTFOLDER + folderName });
     let blob_count = 0
     for await (const blob of blobs) {
+      console.log(blob.name);
       blob_count++;
     }
     return blob_count;

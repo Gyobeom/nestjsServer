@@ -27,7 +27,7 @@ export class CrawlsService {
 
   }
 
-  async findProgressCustomerCount(id: number) {
+  async findProgressCustomerCount(id: string) {
     return await this.crawlRepository.findProgressCustomerCount(id);
   }
 

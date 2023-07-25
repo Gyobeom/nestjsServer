@@ -87,12 +87,12 @@ export class CrawlsRepository {
     }
   }
 
-  async findProgressCustomerCount(id: number) {
+  async findProgressCustomerCount(id: string) {
     try {
       const progressCnt = await this.crawlProgress.createQueryBuilder('progress')
         .select('progress.request_seq')
         .innerJoin(TbCrawlRequest, 'request', 'progress.request_seq = request.seq')
-        .where('request.customer_seq IN (:id)', { id: id })
+        .where('request.mode IN (:id)', { id: id })
         .getCount();
       return progressCnt
     } catch (e) {
@@ -264,7 +264,7 @@ export class CrawlsRepository {
 
       //병렬처리
       const promises = yearMode.map(async i => {
-        let progressCnt = await this.findProgressCustomerCount(i.customerSeq);
+        let progressCnt = await this.findProgressCustomerCount(i.mode);
         let progressErrorCnt = await this.findProgressErrorCount(i.customerSeq);
         // let requestQueue = await this.getQueueCount(i.mode);
         // let blobCount = await this.getBlobCount(i.mode);

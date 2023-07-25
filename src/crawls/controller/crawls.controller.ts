@@ -32,7 +32,7 @@ export class CrawlsController {
 
   @ApiResponse({ status: 201, description: 'Return progress count' })
   @Get('progresscnt/customer/:id')
-  async findProgressCustomerCount(@Param('id') id: number) {
+  async findProgressCustomerCount(@Param('id') id: string) {
     return await this.crawlsService.findProgressCustomerCount(id)
 
   }
