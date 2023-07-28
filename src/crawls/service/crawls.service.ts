@@ -18,33 +18,34 @@ export class CrawlsService {
     return await this.crawlRepository.insertRequest(createCrawlDto);
   }
 
-  async findRequest(): Promise<TbCrawlRequest[]> {
-    return await this.crawlRepository.findRequest();
-  }
 
   async findProgress(): Promise<TbCrawlProgress[]> {
     return await this.crawlRepository.findProgress();
 
   }
 
-  async findProgressCustomerCount(id: string) {
-    return await this.crawlRepository.findProgressCustomerCount(id);
+  async findProgressbyModeName(id: string) {
+    return await this.crawlRepository.findProgressbyModeName(id);
   }
 
   async findProgressCustomer(id: number) {
     return await this.crawlRepository.findProgressCustomer(id);
   }
 
-  async update(id: string, updateCrawlDto: UpdateCrawlDto) {
-    const temp_data = await this.crawlRepository.update(id, updateCrawlDto);
+  async RequestUpdate(id: number, updateCrawlDto: UpdateCrawlDto) {
+    const temp_data = await this.crawlRepository.RequestUpdate(id, updateCrawlDto);
     if (temp_data.affected === 0) {
       throw new BadRequestException('Not Found Request Data', { cause: new Error(), description: 'Not Found Request Data' })
     }
     return temp_data
   }
 
-  async remove(id: string) {
-    return await this.crawlRepository.remove(id);
+  async RequestRemove(id: number) {
+    const temp_data = await this.crawlRepository.RequestRemove(id);
+    if (temp_data.affected === 0) {
+      throw new BadRequestException('Not Found Seq Number', { cause: new Error(), description: 'Not Found Seq Number' })
+    }
+    return temp_data
   }
   async insertCustomer(createCustomer: CreateCustomerDto) {
     return await this.crawlRepository.insertCustomer(createCustomer);
@@ -66,8 +67,8 @@ export class CrawlsService {
     return await this.crawlRepository.getQueueCount(queueName);
   }
 
-  async findProgressErrorCustomer(id: number) {
-    return await this.crawlRepository.findProgressErrorCount(id);
+  async findProgressErrorCntByCustomerName(id: number) {
+    return await this.crawlRepository.findProgressErrorCntByCustomerName(id);
   }
 
   async findTotalRule() {
@@ -88,4 +89,14 @@ export class CrawlsService {
     return await this.crawlRepository.todayProgressTotal();
   }
 
+  async customerRequestTotal(id: string) {
+    return await this.crawlRepository.customerRequestTotal(id);
+  }
+
+  async findRequestbyCustomerName(id: string) {
+    return await this.crawlRepository.findRequestbyCustomerName(id);
+  }
+  async findRequestbyModeName(id: string) {
+    return await this.crawlRepository.findRequestbyModeName(id);
+  }
 }

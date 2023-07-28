@@ -69,15 +69,6 @@ export class CrawlsRepository {
     }
   }
 
-  async findRequest() {
-    try {
-      return await this.crawlRepository.find()
-    } catch (e) {
-      console.log('Find Request ERROR')
-      throw e
-    }
-  }
-
   async findProgress() {
     try {
       return await this.crawlProgress.find();
@@ -87,7 +78,33 @@ export class CrawlsRepository {
     }
   }
 
-  async findProgressCustomerCount(id: string) {
+  async findRequestbyModeName(id: string) {
+    try {
+      const customerCnt = await this.crawlRepository.createQueryBuilder('request')
+        .where('request.mode IN (:id)', { id: id })
+        .getMany();
+      return customerCnt
+    } catch (e) {
+      console.log(e);
+      throw e
+    }
+  }
+
+  async findRequestbyCustomerName(id: string) {
+    try {
+      const customer_seq = await this.crawlCustomer.find({ where: { name: id } });
+      const requestCnt = await this.crawlRepository.createQueryBuilder('request')
+        .where('request.customer_seq = :id', { id: customer_seq[0].seq })
+        .getMany();
+      console.log(requestCnt);
+      return requestCnt
+    } catch (e) {
+      console.log(e);
+      throw e
+    }
+  }
+
+  async findProgressbyModeName(id: string) {
     try {
       const progressCnt = await this.crawlProgress.createQueryBuilder('progress')
         .select('progress.request_seq')
@@ -102,7 +119,7 @@ export class CrawlsRepository {
   }
 
 
-  async findProgressErrorCount(id: number) {
+  async findProgressErrorCntByCustomerName(id: number) {
     try {
       const customerCnt = await this.crawlCustomer.createQueryBuilder('customer')
         .where("customer.seq = :id", { id: id })
@@ -119,15 +136,35 @@ export class CrawlsRepository {
         return progressErrorCnt
 
         //return progressErrorCnt
-
-
-
       }
     } catch (err) {
       console.log(err);
       throw err
     }
+  }
 
+  async findProgressErrorCountByModeName(id: string) {
+    try {
+      const customerCnt = await this.crawlRepository.createQueryBuilder('request')
+        .where("request.mode = :id", { id: id })
+        .getCount();
+      if (customerCnt == 0) {
+        throw new BadRequestException('Check Mode Name', { cause: new Error(), description: 'Check Mode Name' });
+      } else {
+        const progressErrorCnt = await this.crawlProgress.createQueryBuilder('progress')
+          .select('progress.request_seq')
+          .innerJoin(TbCrawlRequest, 'request', 'progress.request_seq = request.seq')
+          .where('request.mode IN (:id)', { id: id })
+          .andWhere('progress.error_msg is not null')
+          .getCount();
+        return progressErrorCnt
+
+        //return progressErrorCnt
+      }
+    } catch (err) {
+      console.log(err);
+      throw err
+    }
   }
 
   async findProgressCustomer(id: number) {
@@ -144,30 +181,36 @@ export class CrawlsRepository {
     }
   }
 
-  async update(id: string, updateCrawlDto: UpdateCrawlDto) {
+  async RequestUpdate(id: number, updateCrawlDto: UpdateCrawlDto) {
     try {
-      return await this.crawlRepository.createQueryBuilder()
-        .update()
-        .set({
-          status: updateCrawlDto.status,
-          schedules: updateCrawlDto.schedules,
-          startDt: updateCrawlDto.start_dt,
-          endDt: updateCrawlDto.end_dt
-        })
-        .where("channel_seq = :id", { id: id })
-        .execute();
+      if (await this.crawlRepository.find({ where: { seq: id } })) {
+        return await this.crawlRepository.createQueryBuilder()
+          .update()
+          .set({
+            status: updateCrawlDto.status,
+            schedules: updateCrawlDto.schedules,
+            startDt: updateCrawlDto.start_dt,
+            endDt: updateCrawlDto.end_dt
+          })
+          .where("seq = :id", { id: id })
+          .execute();
+      } else {
+        return ({ affected: 0 })
+      }
     } catch (e) {
       console.log('Not Updated');
       throw (e);
     }
   }
 
-  async remove(id: string) {
+  async RequestRemove(id: number) {
     try {
-      return await this.crawlProgress.createQueryBuilder()
-        .delete()
-        .where("request_seq = :id", { id: id })
-        .execute();
+      if (await this.crawlRepository.find({ where: { seq: id } })) {
+        return await this.crawlProgress.createQueryBuilder()
+          .delete()
+          .where("request_seq = :id", { id: id })
+          .execute();
+      }
     } catch (e) {
       console.log("Not Deleted");
       throw (e);
@@ -264,8 +307,8 @@ export class CrawlsRepository {
 
       //병렬처리
       const promises = yearMode.map(async i => {
-        let progressCnt = await this.findProgressCustomerCount(i.mode);
-        let progressErrorCnt = await this.findProgressErrorCount(i.customerSeq);
+        let progressCnt = await this.findRequestbyModeName(i.mode);
+        let progressErrorCnt = await this.findProgressErrorCntByCustomerName(i.customerSeq);
         // let requestQueue = await this.getQueueCount(i.mode);
         // let blobCount = await this.getBlobCount(i.mode);
         // let serviceBuseQueue = await this.getServiceBusQueueCount(i.mode);
@@ -289,6 +332,46 @@ export class CrawlsRepository {
       const totalProgress = await Promise.all(promises);
       return totalProgress;
       //return yearMode;
+    } catch (err) {
+      console.log(err);
+      throw err
+    }
+
+  }
+
+  async customerRequestTotal(id: string) {
+    try {
+      const yearMode = await this.crawlRepository.createQueryBuilder('request')
+        .select('request.mode')
+        .innerJoin(TbCustomer, "customer", "customer.seq = request.customer_seq")
+        .where('customer.name = :id', { id: id })
+        .andWhere('customer.use_yn = :name', { name: "Y" })
+        .groupBy('request.mode')
+        .getMany();
+      console.log(yearMode);
+
+      //병렬처리
+      const promises = yearMode.map(async i => {
+        let progressCnt = await this.findProgressbyModeName(i.mode);
+        let progressErrorCnt = await this.findProgressErrorCountByModeName(i.mode);
+
+
+        return Promise.allSettled([progressCnt, progressErrorCnt])
+          .then(results => {
+            const [progressCntResult, progressErrorCntResult] = results;
+            const result = {
+              modeName: i.mode,
+              progressCount: progressCntResult.status === 'fulfilled' ? progressCntResult.value : null,
+              progressErrorCount: progressErrorCntResult.status === 'fulfilled' ? progressErrorCntResult.value : null,
+            };
+            console.log(result);
+            console.log(moment().format());
+            return result;
+          });
+      });
+      const totalProgress = await Promise.all(promises);
+      console.log(totalProgress);
+      return totalProgress;
     } catch (err) {
       console.log(err);
       throw err

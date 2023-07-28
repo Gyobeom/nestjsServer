@@ -18,22 +18,10 @@ export class CrawlsController {
     return await this.crawlsService.insertRequest(createCrawlDto);
   }
 
-  @ApiResponse({ status: 201, description: 'All Request' })
-  @Get('allrequests')
-  async findAll() {
-    return await this.crawlsService.findRequest();
-  }
-
-  @ApiResponse({ status: 201, description: 'All Progress' })
-  @Get('allprogress')
-  async findProgress() {
-    return await this.crawlsService.findProgress();
-  }
-
-  @ApiResponse({ status: 201, description: 'Return progress count' })
+  @ApiResponse({ status: 201, description: 'Return progress count by Mode Name' })
   @Get('progresscnt/customer/:id')
-  async findProgressCustomerCount(@Param('id') id: string) {
-    return await this.crawlsService.findProgressCustomerCount(id)
+  async findProgressbyModeName(@Param('id') id: string) {
+    return await this.crawlsService.findProgressbyModeName(id)
 
   }
 
@@ -44,16 +32,17 @@ export class CrawlsController {
   }
 
   @ApiResponse({ status: 201, description: 'Request Update' })
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateCrawlDto: UpdateCrawlDto) {
-    return await this.crawlsService.update(id, updateCrawlDto);
+  @Patch('request/update/:id')
+  async RequestUpdate(@Param('id') id: number, @Body() updateCrawlDto: UpdateCrawlDto) {
+    return await this.crawlsService.RequestUpdate(id, updateCrawlDto);
   }
 
-  @ApiResponse({ status: 201, description: 'Progress Delete' })
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.crawlsService.remove(id);
+  @ApiResponse({ status: 201, description: 'Request Delete' })
+  @Delete('request/delete/:id')
+  async remove(@Param('id') id: number) {
+    return await this.crawlsService.RequestRemove(id);
   }
+
   @ApiResponse({ status: 200, description: 'Insert Customer' })
   @Post('insert/customer')
   async createCustomer(@Body() createCustomerDto: CreateCustomerDto) {
@@ -84,10 +73,10 @@ export class CrawlsController {
     return await this.crawlsService.getQueueCount(id);
   }
 
-  @ApiResponse({ status: 200, description: 'Find Progress Error Count' })
+  @ApiResponse({ status: 200, description: 'Find Progress Error Count by Customer Name' })
   @Get('progress/errorCnt/:id')
-  async findProgressCustomerErrorCount(@Param('id') id: number) {
-    return await this.crawlsService.findProgressErrorCustomer(id);
+  async findProgressErrorCntByCustomerName(@Param('id') id: number) {
+    return await this.crawlsService.findProgressErrorCntByCustomerName(id);
   }
 
 
@@ -115,4 +104,21 @@ export class CrawlsController {
     return await this.crawlsService.todayProgressTotal();
   }
 
+  @ApiResponse({ status: 200, description: 'Get Mode Name , Mode - progressCnt, ProgressErrCnt' })
+  @Get('customerRequestTotal/:id')
+  async customerRequestTotal(@Param('id') id: string) {
+    return await this.crawlsService.customerRequestTotal(id);
+  }
+
+  @ApiResponse({ status: 200, description: 'Get All Request By Customer Name' })
+  @Get('allRequest/customerName/:id')
+  async findRequestbyCustomerName(@Param('id') id: string) {
+    return await this.crawlsService.findRequestbyCustomerName(id);
+  }
+
+  @ApiResponse({ status: 200, description: 'Get All Request By Mode Name' })
+  @Get('allRequest/modeName/:id')
+  async findRequestbyModeName(@Param('id') id: string) {
+    return await this.crawlsService.findRequestbyModeName(id);
+  }
 }
