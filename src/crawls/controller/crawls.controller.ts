@@ -105,7 +105,7 @@ export class CrawlsController {
   }
 
   @ApiResponse({ status: 200, description: 'Get Mode Name , Mode - progressCnt, ProgressErrCnt By Customer Name' })
-  @Get('projectManager/customer/modeStatus:id')
+  @Get('projectManager/customer/modeStatus/:id')
   async customerRequestTotal(@Param('id') id: string) {
     return await this.crawlsService.customerRequestTotal(id);
   }

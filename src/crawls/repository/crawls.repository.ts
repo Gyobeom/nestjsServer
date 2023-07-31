@@ -341,17 +341,16 @@ export class CrawlsRepository {
 
   async customerRequestTotal(id: string) {
     try {
-      const yearMode = await this.crawlRepository.createQueryBuilder('request')
+      const collectMode = await this.crawlRepository.createQueryBuilder('request')
         .select('request.mode')
         .innerJoin(TbCustomer, "customer", "customer.seq = request.customer_seq")
         .where('customer.name = :id', { id: id })
         .andWhere('customer.use_yn = :name', { name: "Y" })
         .groupBy('request.mode')
         .getMany();
-      console.log(yearMode);
 
       //병렬처리
-      const promises = yearMode.map(async i => {
+      const promises = collectMode.map(async i => {
         let progressCnt = await this.findProgressbyModeName(i.mode);
         let progressErrorCnt = await this.findProgressErrorCountByModeName(i.mode);
 
